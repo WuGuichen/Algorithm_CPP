@@ -298,6 +298,7 @@ bool BiTree<T>::isBalanced(BiTNode<T> *root) {
     // 1. 左子树是平衡二叉树。
     // 2. 右子树是平衡二叉树。
     // 3. 左右子树高度差不超过1。
+    return false;
 }
 
 #endif
