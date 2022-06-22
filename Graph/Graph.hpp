@@ -1,5 +1,5 @@
-#ifndef TREE_HPP
-#define TREE_HPP
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
 
 #include <stdio.h>
 
@@ -32,6 +32,9 @@ public:
     bool operator==(const Node &node) const {
         return &node == this;
     }
+    bool operator < (const Node &node) const{
+        return value < node.value;
+    }
 };
 
 class Edge {
@@ -45,6 +48,12 @@ public:
         // return from == edge.from && to == edge.to;
         return &edge == this;
     }
+    bool operator < (const Edge &edge)const{
+        return weight < edge.weight;
+    }
+    // bool operator > (const Edge &edge)const{
+    //     return this->weight > edge.weight;
+    // }
     // char *getHash() const {
     //     char f = from == nullptr ? '#' : from->value;
     //     char t = to == nullptr ? '#' : to->value;
