@@ -35,6 +35,7 @@ class MySets {
 };
 
 unordered_set<Edge*> kruskalMST(Graph graph);
+unordered_set<Edge*> primMST(Graph graph);
 
 unordered_set<Edge*> kruskalMST(Graph graph){
     list<Node*> nodes;
@@ -65,11 +66,42 @@ unordered_set<Edge*> kruskalMST(Graph graph){
     return res;
 }
 
+unordered_set<Edge*> primMST(Graph graph){
+    // 解锁的边进入小根堆
+    const auto cmp = [](Edge*& e1, Edge*& e2) { return e1->weight > e2->weight; };
+    priority_queue<Edge*, vector<Edge*>, decltype(cmp)> priorityQueue(cmp);
+    unordered_set<Node*> set;  // 检查Node是否添加过
+    unordered_set<Edge*> res;  // 依次挑选的边
+    for(auto i : graph.nodes){
+        Node* node = i.second;
+        if(set.find(node) == set.end()){
+            set.emplace(node);    // 加入新Node
+            for(Edge* edge : node->edges){  // 解锁所有Node连的边
+                priorityQueue.emplace(edge);
+            }
+            while(!priorityQueue.empty()){
+                Edge* edge = priorityQueue.top();
+                priorityQueue.pop();
+                Node* toNode = edge->to;   // 可能的新Node
+                if(set.find(toNode) == set.end()){
+                    set.emplace(toNode);
+                    res.emplace(edge);
+                    for(Edge* nextEdge : toNode->edges){
+                        priorityQueue.emplace(nextEdge);
+                    }
+                }
+            }
+        }
+    }
+    return res;
+}
+
 int main() {
     vector<vector<int>> data;
-    data = {{1, 3, 4},{3, 1, 4}, {2, 3, 8}, {3, 4, 1}, {1, 2, 3}, {1, 4, 2}};
+    data = {{1, 3, 4},{3, 1, 4}, {2, 3, 8},{3, 2, 8}, {3, 4, 1},{4, 3, 1}, {1, 2, 3},{2,1,3}, {1, 4, 2},{4,1,2}};
     Graph graph(data);
-    unordered_set<Edge*> res = kruskalMST(graph);
+    // unordered_set<Edge*> res = kruskalMST(graph);
+    unordered_set<Edge*> res = primMST(graph);
     printf("res: ");
     for(auto i : res){
         printf("%d, ", i->weight);
