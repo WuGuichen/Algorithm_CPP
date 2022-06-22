@@ -18,11 +18,11 @@ class MySets {
     }
     // 将两个结点的集合合并成一样的
     void unionSet(Node* from, Node* to) {
-        list<Node*> fromSet = setMap.at(from);
+        list<Node*>* fromSet = &setMap.at(from);  // 因为要改，所以用引用
         list<Node*> toSet = setMap.at(to);
         for (Node* toNode : toSet) {
-            fromSet.emplace_back(toNode);
-            setMap.emplace(toNode, fromSet);
+            fromSet->emplace_back(toNode);
+            setMap[toNode] = *fromSet;  // 覆盖原来的值
         }
     }
 };
@@ -37,18 +37,22 @@ int main() {
     }
     MySets ms(nodes);
     bool isSame = false;
-    for (Node* cur : nodes) {
-        isSame = ms.isSameSet(graph.getNode(1), cur);
-        printf("isSame: %s, value: %d\n", isSame ? "true" : "false", cur->value);
+    ms.unionSet(graph.getNode(1), graph.getNode(3));
+    for (auto i : ms.setMap){
+        printf("Node: %d; Set: ", i.first->value);
+        for(auto j : i.second){
+            printf("%d,", j->value);
+        }
+        printf("\n");
     }
-    // 自定义类指针无法通过重载<就可以排好序
-    auto cmp = [](Edge*& e1, Edge*& e2) { return e1->weight < e2->weight; };
-    priority_queue<Edge*, vector<Edge*>, decltype(cmp)> edges(cmp);
-    for (auto edge : graph.edges)
-        edges.emplace(edge);
-    while (!edges.empty()) {
-        printf("%d_", edges.top()->weight);
-        edges.pop();
-    }
+    // // 自定义类指针无法通过重载<就可以排好序
+    // auto cmp = [](Edge*& e1, Edge*& e2) { return e1->weight < e2->weight; };
+    // priority_queue<Edge*, vector<Edge*>, decltype(cmp)> edges(cmp);
+    // for (auto edge : graph.edges)
+    //     edges.emplace(edge);
+    // while (!edges.empty()) {
+    //     printf("%d_", edges.top()->weight);
+    //     edges.pop();
+    // }
     return 0;
 }
